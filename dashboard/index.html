@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Intelligence Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>YouTube Intelligence Dashboard</h1>
+            <span id="last-updated" class="timestamp">Loading...</span>
+        </div>
+    </header>
+
+    <main>
+        <!-- Row 1: Trending + Sentiment -->
+        <div class="grid-row two-col">
+            <section id="trending" class="card">
+                <h2>Trending Now</h2>
+                <div id="trending-content" class="card-body">
+                    <div class="loading">Loading...</div>
+                </div>
+            </section>
+
+            <section id="sentiment" class="card">
+                <h2>AI Space Sentiment</h2>
+                <div id="sentiment-content" class="card-body">
+                    <div class="loading">Loading...</div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Row 2: Top Performing Videos -->
+        <section id="top-videos" class="card full-width">
+            <h2>Top Performing Videos</h2>
+            <div id="top-videos-content" class="card-body video-grid">
+                <div class="loading">Loading...</div>
+            </div>
+        </section>
+
+        <!-- Row 3: Channel Breakdown -->
+        <section id="channels" class="card full-width">
+            <h2>Channel Breakdown</h2>
+            <div id="channels-content" class="card-body">
+                <div class="loading">Loading...</div>
+            </div>
+        </section>
+
+        <!-- Row 4: All Videos by Creator -->
+        <section id="all-videos" class="card full-width">
+            <h2>All Videos by Creator</h2>
+            <div id="all-videos-content" class="card-body">
+                <div class="loading">Loading...</div>
+            </div>
+        </section>
+
+        <!-- Row 5: Suggested Content Topics -->
+        <section id="suggested-topics" class="card full-width">
+            <h2>Suggested Content Topics</h2>
+            <div id="suggested-topics-content" class="card-body">
+                <div class="loading">Loading...</div>
+            </div>
+        </section>
+
+        <!-- Row 6: Content Opportunities + Title Patterns -->
+        <div class="grid-row two-col">
+            <section id="opportunities" class="card">
+                <h2>Content Opportunities</h2>
+                <div id="opportunities-content" class="card-body">
+                    <div class="loading">Loading...</div>
+                </div>
+            </section>
+
+            <section id="patterns" class="card">
+                <h2>Title Patterns</h2>
+                <div id="patterns-content" class="card-body">
+                    <div class="loading">Loading...</div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <p>YouTube Intelligence Dashboard &mdash; AI Content Research Tool</p>
+    </footer>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
