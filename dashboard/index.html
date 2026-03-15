@@ -9,78 +9,137 @@
 <body>
     <header>
         <div class="header-content">
-            <h1>YouTube Intelligence Dashboard</h1>
-            <span id="last-updated" class="timestamp">Loading...</span>
+            <div class="header-left">
+                <h1>YouTube Intelligence Dashboard</h1>
+                <span id="last-updated" class="timestamp">Loading...</span>
+            </div>
+            <div class="header-right">
+                <button id="bookmarks-toggle" class="bookmarks-btn" title="Saved Items">
+                    <span class="bookmark-icon">&#9733;</span>
+                    <span id="bookmark-count" class="bookmark-badge" style="display:none">0</span>
+                </button>
+            </div>
         </div>
+        <nav class="tab-bar">
+            <button class="tab active" data-tab="overview">Overview</button>
+            <button class="tab" data-tab="studio">Content Studio</button>
+            <button class="tab" data-tab="research">Research</button>
+        </nav>
     </header>
 
     <main>
-        <!-- Row 1: Trending + Sentiment -->
-        <div class="grid-row two-col">
-            <section id="trending" class="card">
-                <h2>Trending Now</h2>
-                <div id="trending-content" class="card-body">
+        <!-- ═══ OVERVIEW TAB ═══ -->
+        <div class="tab-content active" data-tab="overview">
+            <div class="grid-row two-col">
+                <section id="trending" class="card">
+                    <h2>Trending Now</h2>
+                    <div id="trending-content" class="card-body">
+                        <div class="loading">Loading...</div>
+                    </div>
+                </section>
+
+                <section id="sentiment" class="card">
+                    <h2>AI Space Sentiment</h2>
+                    <div id="sentiment-content" class="card-body">
+                        <div class="loading">Loading...</div>
+                    </div>
+                </section>
+            </div>
+
+            <section id="top-videos" class="card full-width">
+                <h2>Top Performing Videos</h2>
+                <div id="top-videos-content" class="card-body video-grid">
                     <div class="loading">Loading...</div>
                 </div>
             </section>
 
-            <section id="sentiment" class="card">
-                <h2>AI Space Sentiment</h2>
-                <div id="sentiment-content" class="card-body">
+            <section id="channels" class="card full-width">
+                <h2>Channel Breakdown</h2>
+                <div id="channels-content" class="card-body">
                     <div class="loading">Loading...</div>
                 </div>
             </section>
         </div>
 
-        <!-- Row 2: Top Performing Videos -->
-        <section id="top-videos" class="card full-width">
-            <h2>Top Performing Videos</h2>
-            <div id="top-videos-content" class="card-body video-grid">
-                <div class="loading">Loading...</div>
-            </div>
-        </section>
-
-        <!-- Row 3: Channel Breakdown -->
-        <section id="channels" class="card full-width">
-            <h2>Channel Breakdown</h2>
-            <div id="channels-content" class="card-body">
-                <div class="loading">Loading...</div>
-            </div>
-        </section>
-
-        <!-- Row 4: All Videos by Creator -->
-        <section id="all-videos" class="card full-width">
-            <h2>All Videos by Creator</h2>
-            <div id="all-videos-content" class="card-body">
-                <div class="loading">Loading...</div>
-            </div>
-        </section>
-
-        <!-- Row 5: Suggested Content Topics -->
-        <section id="suggested-topics" class="card full-width">
-            <h2>Suggested Content Topics</h2>
-            <div id="suggested-topics-content" class="card-body">
-                <div class="loading">Loading...</div>
-            </div>
-        </section>
-
-        <!-- Row 6: Content Opportunities + Title Patterns -->
-        <div class="grid-row two-col">
-            <section id="opportunities" class="card">
-                <h2>Content Opportunities</h2>
-                <div id="opportunities-content" class="card-body">
+        <!-- ═══ CONTENT STUDIO TAB ═══ -->
+        <div class="tab-content" data-tab="studio">
+            <section id="suggested-topics" class="card full-width">
+                <h2>Suggested Content Topics</h2>
+                <div id="suggested-topics-content" class="card-body">
                     <div class="loading">Loading...</div>
                 </div>
             </section>
 
-            <section id="patterns" class="card">
-                <h2>Title Patterns</h2>
-                <div id="patterns-content" class="card-body">
+            <div class="grid-row two-col">
+                <section id="opportunities" class="card">
+                    <h2>Content Opportunities</h2>
+                    <div id="opportunities-content" class="card-body">
+                        <div class="loading">Loading...</div>
+                    </div>
+                </section>
+
+                <section id="patterns" class="card">
+                    <h2>Title Patterns</h2>
+                    <div id="patterns-content" class="card-body">
+                        <div class="loading">Loading...</div>
+                    </div>
+                </section>
+            </div>
+
+            <section id="pipeline" class="card full-width">
+                <h2>Content Pipeline</h2>
+                <div id="pipeline-content" class="card-body">
+                    <div class="loading">No items in pipeline yet</div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ═══ RESEARCH TAB ═══ -->
+        <div class="tab-content" data-tab="research">
+            <!-- Filter banner (hidden by default) -->
+            <div id="filter-banner" class="filter-banner" style="display:none">
+                <span id="filter-text"></span>
+                <button id="filter-clear" class="filter-clear-btn">Clear filter</button>
+            </div>
+
+            <section id="all-videos" class="card full-width">
+                <h2>All Videos by Creator</h2>
+                <div id="all-videos-content" class="card-body">
+                    <div class="loading">Loading...</div>
+                </div>
+            </section>
+
+            <section id="hidden-gems" class="card full-width">
+                <h2>Hidden Gems</h2>
+                <div id="hidden-gems-content" class="card-body">
+                    <div class="loading">Loading...</div>
+                </div>
+            </section>
+
+            <section id="topic-matrix" class="card full-width">
+                <h2>Cross-Channel Topic Matrix</h2>
+                <div id="topic-matrix-content" class="card-body">
                     <div class="loading">Loading...</div>
                 </div>
             </section>
         </div>
     </main>
+
+    <!-- Bookmarks Sidebar -->
+    <div id="bookmarks-overlay" class="sidebar-overlay" style="display:none"></div>
+    <aside id="bookmarks-sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h2>Saved Items</h2>
+            <button id="bookmarks-close" class="sidebar-close">&times;</button>
+        </div>
+        <div id="bookmarks-list" class="sidebar-body">
+            <div class="loading">No saved items</div>
+        </div>
+        <div class="sidebar-footer">
+            <button id="bookmarks-copy" class="btn-secondary">Copy All</button>
+            <button id="bookmarks-clear" class="btn-secondary btn-danger">Clear All</button>
+        </div>
+    </aside>
 
     <footer>
         <p>YouTube Intelligence Dashboard &mdash; AI Content Research Tool</p>
