@@ -40,22 +40,8 @@ def get_youtube_client():
 
 def resolve_channel_id(youtube, handle: str) -> str | None:
     """Resolve a @handle to a YouTube channel ID."""
-    # Strip the @ prefix for the API query
     query = handle.lstrip("@")
     try:
-        # Use search to find the channel by handle
-        resp = youtube.search().list(
-            part="snippet",
-            q=query,
-            type="channel",
-            maxResults=1,
-        ).execute()
-
-        items = resp.get("items", [])
-        if items:
-            return items[0]["snippet"]["channelId"]
-
-        # Fallback: try channels.list with forHandle
         resp = youtube.channels().list(
             part="id",
             forHandle=query,
@@ -63,10 +49,8 @@ def resolve_channel_id(youtube, handle: str) -> str | None:
         items = resp.get("items", [])
         if items:
             return items[0]["id"]
-
     except Exception as e:
         print(f"    Error resolving channel {handle}: {e}")
-
     return None
 
 
@@ -189,6 +173,10 @@ def scrape_channel(youtube, channel: dict) -> tuple[list[dict], str | None]:
             or thumbs.get("medium", {}).get("url")
             or f"https://i.ytimg.com/vi/{video_id}/maxresdefault.jpg"
         )
+
+        # Skip Shorts (YouTube Shorts can be up to 3 minutes)
+        if duration_sec <= 180:
+            continue
 
         videos.append({
             "video_id": video_id,

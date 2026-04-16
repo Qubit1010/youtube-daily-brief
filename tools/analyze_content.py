@@ -106,11 +106,33 @@ Guidelines:
 - trending_topics: 5-8 topics, sorted by relevance
 - top_performing: Top 10 videos by view count
 - channel_breakdown: One entry per channel
-- content_opportunities: 3-5 actionable ideas based on gaps you spot
-- suggested_topics: 5-8 specific content topics I should create, based on what's trending, underserved, or has low competition
 - title_patterns: 3-5 patterns you observe in video titles
 - Be specific and data-driven in your analysis
-- For sentiment, consider the overall tone across all channels, not just one"""
+- For sentiment, consider the overall tone across all channels, not just one
+
+CONTENT OPPORTUNITIES (exactly 10-15 ideas):
+Selection rules — follow these strictly:
+- Include ALL videos with 200,000+ views or 500+ comments — these are proven audience signals, always include them
+- Include ALL topics covered by 3+ channels — cross-channel consensus = high demand
+- Prioritize gaps: what are channels NOT covering that the data suggests the audience wants?
+- At least 3 ideas must be "breaking" — the freshest angles from videos published in the last 48 hours
+- At least 2 ideas must target low competition — angles where few channels have posted recently
+- Cover at least 4 different formats across the 10-15 ideas (tutorial, opinion, news, demo, explainer, comparison)
+- Skip generic takes — no "AI is changing everything" ideas. Every idea needs a specific, differentiated angle
+- If two ideas are on the same topic, keep only the one with the stronger hook and more specific angle
+- Fill remaining slots ranked by: view_count signal > cross-channel coverage > uniqueness of angle
+- estimated_interest must reflect actual engagement data: "high" only if 200k+ views or 3+ channels, "medium" for 50k-200k or 2 channels, "low" otherwise
+
+SUGGESTED TOPICS (exactly 10-15 topics):
+Selection rules — follow these strictly:
+- Each topic must have a specific, differentiated angle — not just a subject area
+- competition_level must be data-driven: "low" = topic underrepresented in scraped videos, "high" = 3+ channels already posted on it this cycle
+- why_now must cite a specific signal from the video data (e.g., a channel, view count, publish date) — not vague claims
+- At least 3 topics must be evergreen angles on trending subjects (long-tail content that stays relevant)
+- At least 2 topics must connect to the highest-engagement video in the dataset
+- Cover at least 3 different target formats across all topics
+- No duplicate topics — if the same subject appears twice, merge into the stronger angle
+- Sort by opportunity score: (high_interest + low_competition) first"""
 
 
 def load_scraped_data() -> dict | None:
@@ -188,7 +210,7 @@ def run_analysis(prompt: str) -> dict | None:
     try:
         response = client.chat.completions.create(
             model=MODEL,
-            max_tokens=4096,
+            max_tokens=8192,
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},

@@ -30,6 +30,11 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 #   handle  — the @username (used to resolve the channel via YouTube API)
 #   name    — display name (used in dashboard and analysis)
 CHANNELS = [
+    {"handle": "@theAIsearch",   "name": "AI Search"},
+    {"handle": "@airevolutionx", "name": "AI Revolution"},
+    {"handle": "@Itssssss_Jack", "name": "Jack Roberts"},
+    {"handle": "@danmartell",    "name": "Dan Martell"},
+    {"handle": "@TechWithTim",   "name": "Tech With Tim"},
     {"handle": "@AIDailyBrief",  "name": "AI Daily Brief"},
     {"handle": "@mreflow",       "name": "MreFlow"},
     {"handle": "@TheAiGrid",     "name": "TheAIGrid"},
@@ -46,4 +51,4 @@ TRANSCRIPT_MAX_CHARS = 2000      # Max chars of transcript to keep per video
 HISTORY_DAYS = 7                 # Days of history to keep for trend comparison
 
 # ── Dashboard Settings ────────────────────────────────────────────────────────
-DASHBOARD_PORT = 8080
+DASHBOARD_PORT = 8082

@@ -517,6 +517,7 @@ function initBookmarks() {
         renderBookmarksSidebar();
         document.querySelectorAll(".bookmarked").forEach(el => el.classList.remove("bookmarked"));
     });
+    document.getElementById("bookmarks-save-sheets")?.addEventListener("click", saveBookmarksToSheets);
 
     // Filter clear
     document.getElementById("filter-clear")?.addEventListener("click", clearFilter);
@@ -548,6 +549,47 @@ function renderBookmarksSidebar() {
         `).join("");
     }
     container.innerHTML = html;
+}
+
+async function saveBookmarksToSheets() {
+    const b = getBookmarks();
+    if (!b.videos.length) { alert("No bookmarked videos to save."); return; }
+
+    const btn = document.getElementById("bookmarks-save-sheets");
+    const orig = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "Saving...";
+
+    // Enrich bookmarks with stats from the full in-memory video dataset
+    const enriched = b.videos.map(bm => {
+        const full = _allVideos.find(v => v.video_id === bm.id);
+        return {
+            title: bm.title, channel: bm.channel, url: bm.url,
+            view_count: full?.view_count ?? "",
+            like_count: full?.like_count ?? "",
+            comment_count: full?.comment_count ?? 0,
+            duration_formatted: full?.duration_formatted ?? "",
+            published_date: full?.published_date ?? "",
+        };
+    });
+
+    try {
+        const resp = await fetch("/api/save-to-sheets", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(enriched)
+        });
+        const result = await resp.json();
+        if (!resp.ok) throw new Error(result.error || `HTTP ${resp.status}`);
+        btn.textContent = `Saved ${result.saved}!`;
+        btn.classList.add("btn-sheets-success");
+        setTimeout(() => { btn.textContent = orig; btn.disabled = false; btn.classList.remove("btn-sheets-success"); }, 3000);
+    } catch (err) {
+        btn.textContent = "Error — see console";
+        btn.classList.add("btn-sheets-error");
+        console.error("Save to Sheets failed:", err);
+        setTimeout(() => { btn.textContent = orig; btn.disabled = false; btn.classList.remove("btn-sheets-error"); }, 4000);
+    }
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -752,7 +794,7 @@ function renderAllVideosByCreator(videos) {
                 </div>
                 <table class="creator-table" data-channel="${esc(ch)}">
                     <thead>
-                        <tr><th>Video</th><th>Views</th><th>Likes</th><th>Eng. Rate</th><th>Duration</th><th>Published</th><th></th></tr>
+                        <tr><th>Video</th><th>Views</th><th>Likes</th><th>Eng. Rate</th><th>Duration</th><th>Published</th><th>Save</th></tr>
                     </thead>
                     <tbody>${vids.map(renderRow).join("")}</tbody>
                 </table>

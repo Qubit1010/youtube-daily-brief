@@ -151,6 +151,10 @@ main {
 
 .btn-secondary:hover { background: var(--bg-card-hover); color: var(--text-primary); }
 .btn-secondary.btn-danger:hover { background: var(--red-dim); color: var(--red); }
+.btn-sheets { border-color: var(--green); color: var(--green); }
+.btn-sheets:hover { background: rgba(0,232,143,0.1); border-color: var(--green); color: var(--green); }
+.btn-sheets-success { background: rgba(0,232,143,0.1) !important; color: var(--green) !important; border-color: var(--green) !important; }
+.btn-sheets-error { background: rgba(255,68,102,0.1) !important; color: var(--red) !important; border-color: var(--red) !important; }
 
 /* ── Trending Topics (Pills) ─────────────────────────────────────────────── */
 .topic-pills {
@@ -395,6 +399,14 @@ main {
 .topic-card .bookmark-topic { top: 0.75rem; right: 0.75rem; }
 .topic-card-header { display: flex; justify-content: space-between; align-items: flex-start; }
 .topic-card-header .bookmark-topic { position: static; }
+
+/* Bookmark button inside creator tables — override the absolute positioning */
+.creator-table .bookmark-video {
+    position: static;
+    background: transparent;
+    font-size: 1rem;
+    padding: 0.2rem 0.4rem;
+}
 
 /* ── Bookmarks Header Button ─────────────────────────────────────────────── */
 .bookmarks-btn {

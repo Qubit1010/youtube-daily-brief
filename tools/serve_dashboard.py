@@ -11,8 +11,10 @@ Usage:
     python tools/serve_dashboard.py
 """
 
+import datetime
 import json
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -120,6 +122,90 @@ Return ONLY valid JSON, no markdown."""
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+SHEET_ID = "1TwAuLDKak3hpPWqlojpNL_OTsUyCOBaAVjRRncOpb9Q"
+SHEET_TAB = "Youtube bookmarked"
+SHEET_HEADERS = ["Date Saved", "Title", "Channel", "URL", "Views", "Likes", "Eng Rate", "Duration", "Published Date"]
+
+
+def _gws(*args):
+    """Run a gws command and return (stdout, returncode)."""
+    env = os.environ.copy()
+    npm_path = os.path.expanduser(r"~\AppData\Roaming\npm")
+    env["PATH"] = npm_path + ";" + env.get("PATH", "")
+    cmd = subprocess.list2cmdline(["gws"] + list(args))
+    result = subprocess.run(cmd, capture_output=True, text=True, shell=True, env=env)
+    return result.stdout.strip(), result.returncode
+
+
+@app.route("/api/save-to-sheets", methods=["POST"])
+def save_to_sheets():
+    """Save bookmarked videos to the Youtube bookmarked tab in Google Sheets."""
+    videos = request.get_json()
+    if not videos or not isinstance(videos, list):
+        return jsonify({"error": "Expected a JSON array of video objects"}), 400
+
+    # Check which tabs exist
+    out, _ = _gws(
+        "sheets", "spreadsheets", "get",
+        "--params", json.dumps({"spreadsheetId": SHEET_ID, "fields": "sheets.properties.title"}),
+        "--format", "json",
+    )
+    try:
+        sheet_data = json.loads(out)
+        existing_tabs = [s["properties"]["title"] for s in sheet_data.get("sheets", [])]
+    except Exception:
+        return jsonify({"error": f"Could not read sheet metadata: {out}"}), 500
+
+    # Create tab + headers if it doesn't exist yet
+    if SHEET_TAB not in existing_tabs:
+        _, rc = _gws(
+            "sheets", "spreadsheets", "batchUpdate",
+            "--params", json.dumps({"spreadsheetId": SHEET_ID}),
+            "--json", json.dumps({"requests": [{"addSheet": {"properties": {"title": SHEET_TAB}}}]}),
+        )
+        if rc != 0:
+            return jsonify({"error": "Failed to create sheet tab"}), 500
+
+        _gws(
+            "sheets", "spreadsheets", "values", "append",
+            "--params", json.dumps({"spreadsheetId": SHEET_ID, "range": f"{SHEET_TAB}!A1", "valueInputOption": "USER_ENTERED"}),
+            "--json", json.dumps({"values": [SHEET_HEADERS]}),
+        )
+
+    # Build rows
+    date_saved = datetime.date.today().isoformat()
+    rows = []
+    for v in videos:
+        views = v.get("view_count", "")
+        likes = v.get("like_count", "")
+        comments = v.get("comment_count", 0)
+        eng_rate = ""
+        if isinstance(views, (int, float)) and views > 0:
+            eng_rate = round(((likes or 0) + (comments or 0)) / views * 100, 2)
+        rows.append([
+            date_saved,
+            v.get("title", ""),
+            v.get("channel", ""),
+            v.get("url", ""),
+            views, likes, eng_rate,
+            v.get("duration_formatted", ""),
+            v.get("published_date", ""),
+        ])
+
+    if not rows:
+        return jsonify({"saved": 0})
+
+    _, rc = _gws(
+        "sheets", "spreadsheets", "values", "append",
+        "--params", json.dumps({"spreadsheetId": SHEET_ID, "range": f"{SHEET_TAB}!A1", "valueInputOption": "USER_ENTERED"}),
+        "--json", json.dumps({"values": rows}),
+    )
+    if rc != 0:
+        return jsonify({"error": "Failed to append rows"}), 500
+
+    return jsonify({"saved": len(rows)})
 
 
 def main():
