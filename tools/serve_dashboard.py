@@ -174,10 +174,30 @@ def save_to_sheets():
             "--json", json.dumps({"values": [SHEET_HEADERS]}),
         )
 
-    # Build rows
+    # Fetch existing URLs from the sheet to deduplicate
+    existing_urls = set()
+    url_out, _ = _gws(
+        "sheets", "spreadsheets", "values", "get",
+        "--params", json.dumps({"spreadsheetId": SHEET_ID, "range": f"{SHEET_TAB}!D1:D500"}),
+        "--format", "json",
+    )
+    try:
+        url_data = json.loads(url_out)
+        for row in url_data.get("values", [])[1:]:  # skip header row
+            if row:
+                existing_urls.add(row[0].strip())
+    except Exception:
+        pass  # if we can't read existing, proceed without dedup
+
+    # Build rows, skipping already-saved URLs
     date_saved = datetime.date.today().isoformat()
+    skipped = 0
     rows = []
     for v in videos:
+        incoming_url = v.get("url", "").strip()
+        if incoming_url in existing_urls:
+            skipped += 1
+            continue
         views = v.get("view_count", "")
         likes = v.get("like_count", "")
         comments = v.get("comment_count", 0)
@@ -195,7 +215,7 @@ def save_to_sheets():
         ])
 
     if not rows:
-        return jsonify({"saved": 0})
+        return jsonify({"saved": 0, "skipped": skipped})
 
     _, rc = _gws(
         "sheets", "spreadsheets", "values", "append",
@@ -205,7 +225,7 @@ def save_to_sheets():
     if rc != 0:
         return jsonify({"error": "Failed to append rows"}), 500
 
-    return jsonify({"saved": len(rows)})
+    return jsonify({"saved": len(rows), "skipped": skipped})
 
 
 def main():

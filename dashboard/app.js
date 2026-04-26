@@ -581,7 +581,8 @@ async function saveBookmarksToSheets() {
         });
         const result = await resp.json();
         if (!resp.ok) throw new Error(result.error || `HTTP ${resp.status}`);
-        btn.textContent = `Saved ${result.saved}!`;
+        const skipped = result.skipped || 0;
+        btn.textContent = skipped > 0 ? `Saved ${result.saved} (${skipped} duplicate${skipped > 1 ? "s" : ""} skipped)` : `Saved ${result.saved}!`;
         btn.classList.add("btn-sheets-success");
         setTimeout(() => { btn.textContent = orig; btn.disabled = false; btn.classList.remove("btn-sheets-success"); }, 3000);
     } catch (err) {

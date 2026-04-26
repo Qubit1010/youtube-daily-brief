@@ -3,7 +3,9 @@
     "allow": [
       "Bash(python tools/serve_dashboard.py)",
       "Bash(python -c \":*)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8082/)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8082/)",
+      "Bash(.venv/Scripts/python tools/serve_dashboard.py)",
+      "Bash(.venv/Scripts/python tools/scrape_channels.py)"
     ]
   }
 }
