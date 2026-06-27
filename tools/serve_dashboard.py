@@ -14,8 +14,10 @@ Usage:
 import datetime
 import json
 import os
+import shutil
 import subprocess
 import sys
+import traceback
 from pathlib import Path
 
 from flask import Flask, jsonify, request, send_from_directory
@@ -129,23 +131,46 @@ SHEET_TAB = "Youtube bookmarked"
 SHEET_HEADERS = ["Date Saved", "Title", "Channel", "URL", "Views", "Likes", "Eng Rate", "Duration", "Published Date"]
 
 
+_GWS_RUN_JS = os.path.expanduser(
+    r"~\AppData\Roaming\npm\node_modules\@googleworkspace\cli\run.js"
+)
+
+
 def _gws(*args):
-    """Run a gws command and return (stdout, returncode)."""
-    env = os.environ.copy()
-    npm_path = os.path.expanduser(r"~\AppData\Roaming\npm")
-    env["PATH"] = npm_path + ";" + env.get("PATH", "")
-    cmd = subprocess.list2cmdline(["gws"] + list(args))
-    result = subprocess.run(cmd, capture_output=True, text=True, shell=True, env=env)
+    """Run a gws command and return (stdout, returncode).
+
+    Invokes the Node entry script directly (bypassing the .cmd wrapper) so
+    cmd.exe never re-parses our JSON payload. Otherwise `&`, `|`, `<`, `>`,
+    `^` inside video titles get treated as shell metacharacters and truncate
+    the JSON mid-string.
+    """
+    node = shutil.which("node")
+    if not node or not os.path.exists(_GWS_RUN_JS):
+        print(f"[gws] node or gws run.js not found (node={node}, run.js={_GWS_RUN_JS})", flush=True)
+        return "", -1
+    result = subprocess.run(
+        [node, _GWS_RUN_JS, *args],
+        capture_output=True, text=True, shell=False,
+    )
+    if result.returncode != 0:
+        print(f"[gws] FAILED rc={result.returncode}\nSTDOUT: {result.stdout[:1000]}\nSTDERR: {result.stderr[:1000]}", flush=True)
     return result.stdout.strip(), result.returncode
 
 
 @app.route("/api/save-to-sheets", methods=["POST"])
 def save_to_sheets():
     """Save bookmarked videos to the Youtube bookmarked tab in Google Sheets."""
-    videos = request.get_json()
-    if not videos or not isinstance(videos, list):
-        return jsonify({"error": "Expected a JSON array of video objects"}), 400
+    try:
+        videos = request.get_json()
+        if not videos or not isinstance(videos, list):
+            return jsonify({"error": "Expected a JSON array of video objects"}), 400
+        return _save_to_sheets_impl(videos)
+    except Exception as e:
+        print(f"[save_to_sheets] EXCEPTION:\n{traceback.format_exc()}", flush=True)
+        return jsonify({"error": f"{type(e).__name__}: {e}"}), 500
 
+
+def _save_to_sheets_impl(videos):
     # Check which tabs exist
     out, _ = _gws(
         "sheets", "spreadsheets", "get",

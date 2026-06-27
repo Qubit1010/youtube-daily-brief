@@ -5,7 +5,22 @@
       "Bash(python -c \":*)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8082/)",
       "Bash(.venv/Scripts/python tools/serve_dashboard.py)",
-      "Bash(.venv/Scripts/python tools/scrape_channels.py)"
+      "Bash(.venv/Scripts/python tools/scrape_channels.py)",
+      "Bash(bash run.sh)",
+      "Bash(netstat -ano)",
+      "Bash(awk '{print $5}')",
+      "Bash(xargs -I{} taskkill /PID {} /F)",
+      "Bash(taskkill /PID 10360 /F)",
+      "Bash(bash run.sh --no-serve)",
+      "Bash(python tools/analyze_content.py)",
+      "Bash(cmd //c \"%APPDATA%\\\\npm\\\\gws.cmd sheets spreadsheets get --params \\\\\"{\\\\\\\\\\\\\"spreadsheetId\\\\\\\\\\\\\":\\\\\\\\\\\\\"1TwAuLDKak3hpPWqlojpNL_OTsUyCOBaAVjRRncOpb9Q\\\\\\\\\\\\\",\\\\\\\\\\\\\"fields\\\\\\\\\\\\\":\\\\\\\\\\\\\"sheets.properties.title\\\\\\\\\\\\\"}\\\\\" --format json\")",
+      "Bash(cmd //c \"%APPDATA%\\\\npm\\\\gws.cmd auth list\")",
+      "Bash(cmd //c \"%APPDATA%\\\\npm\\\\gws.cmd auth --help\")",
+      "Bash(cmd //c \"%APPDATA%\\\\npm\\\\gws.cmd auth status\")",
+      "Bash(python -c ' *)",
+      "Bash(python .tmp/test_save.py)",
+      "Bash(cmd //c \"where gws\")",
+      "Bash(python tools/scrape_channels.py)"
     ]
   }
 }
